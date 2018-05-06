@@ -5,19 +5,47 @@
 
 #include <assert.h>
 #include <numeric>
+#include <vector>
 
-typedef matrix std::vector<std::vector<int>>
+typedef std::vector<std::vector<int>> matrix;
 
 void zero(matrix& mat) {
-    int n_cols = mat[0].size();
-    std::vector<int> range(10);
-    std::iota(std::begin(range), std::end(range), 0);
-    int n_cols_left = n_cols;
-    
-    for(int i = 0; i < mat.size(); i++) {
+    unsigned long n_rows = mat.size();
+    unsigned long n_cols = mat[0].size();
+
+    std::vector<int> cols(n_cols, 0);
+    std::vector<int> rows(n_rows, 0);
+
+
+    for(int i = 0; i < n_rows; i++) {
+        for(int j = 0; j < n_cols; j++) {
+            if(mat[i][j] == 0) {
+                rows[i] = 1;
+                cols[j] = 1;
+            }
+        }
+    }
+
+    for(int i = 0; i < n_rows; i++) {
+        if(rows[i]) {
+            for(int j = 0; j < n_cols; j++) {
+                mat[i][j] = 0;
+            }
+        }
+    }
+
+    for(int j = 0; j < n_cols; j++) {
+        if(cols[j]) {
+            for(int i = 0; i < n_rows; i++) {
+                mat[i][j] = 0;
+            }
+        }
     }
 }
 
 int main() {
-    assert(true);
+    matrix mat = {{1, 5, 0}, {0, 4, 7}, {2, 7, 8}};
+    zero(mat);
+    matrix exp = {{0, 0, 0}, {0, 0, 0}, {0, 7, 0}};
+    assert(mat == exp);
 }
