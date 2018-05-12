@@ -88,11 +88,17 @@ class List:
         for n in nums:
             self.append(n)
 
-    def append(self, data):
+    def append(self, data, copy=True):
         if not isinstance(data, List.Node):
+            if not copy:
+                raise ValueError('data is not Node, but copy is set to False')
+
             end = List.Node(data)
         else:
-            end = List.Node(data.data)
+            if copy is True:
+                end = List.Node(data.data)
+            else:
+                end = data
 
         if self.head is None:
             self.head = end
