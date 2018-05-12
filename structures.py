@@ -1,3 +1,6 @@
+from itertools import chain
+
+
 class EmptyException(Exception):
     pass
 
@@ -51,7 +54,7 @@ class List:
                 self.append(n)
 
     def append(self, data, copy=True):
-        if not isinstance(data, List.Node):
+        if not isinstance(data, BaseNode):
             if not copy:
                 raise ValueError('data is not Node, but copy is set to False')
 
@@ -71,6 +74,20 @@ class List:
             self.tail = end
 
         self.len += 1
+
+    def get_and_remove(self, index):
+        for i, n in enumerate(self):
+            if i == index:
+                if n.prev is None:
+                    self.head = n.next
+                else:
+                    n.prev.next = n.next
+                if n.next is None:
+                    self.tail = n.prev
+                else:
+                    n.next.prev = n.prev
+                return n
+        return None
 
     def __contains__(self, node):
         for n in self:
@@ -190,20 +207,67 @@ class Stack(List):
 
 
 class Queue(List):
+    def enqueue(self, item):
+        self.append(item, copy=False)
+
+    def dequeue(self):
+        return self.get_and_remove(0)
+
+
+class Graph:
     class Node(BaseNode):
-        pass
+        def __init__(self, key):
+            super().__init__(key)
+            self.children = []
+            self.seen = False
 
-    def remove(self):
-        if self.empty():
-            raise EmptyException
+        def __iter__(self):
+            return iter(self.children)
 
-        node = self.head
-        self.head = self.head.next
-        self.len -= 1
-        return node
+    def __init__(self):
+        self.nodes = {}
 
-    def add(self, data):
-        self.append(data)
+    def add(self, a, b):
+        a = self[a]
+        b = self[b]
 
-    def empty(self):
-        return self.head is None
+        a.children.append(b)
+
+    def __getitem__(self, key):
+        if isinstance(key, Graph.Node):
+            return key
+
+        if key not in self.nodes:
+            self.nodes[key] = Graph.Node(key)
+
+        return self.nodes[key]
+
+
+class Tree:
+    class Node(BaseNode):
+        def __init__(self, key):
+            super().__init__(key)
+            self.l = None
+            self.r = None
+
+        @property
+        def children(self):
+            if self.l is not None and self.r is not None:
+                return [self.l, self.r]
+            elif self.l is not None:
+                return [self.l]
+            elif self.r is not None:
+                return [self.r]
+            else:
+                return []
+
+        def __iter__(self):
+            for v in chain(*map(iter, self.children)):
+                yield v
+            yield self.data
+
+    def __init__(self):
+        self.root = None
+
+    def __iter__(self):
+        return iter(self.root)

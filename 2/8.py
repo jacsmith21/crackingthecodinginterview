@@ -28,3 +28,22 @@ lst = List(1, 2, 3, 4)
 lst.append(lst[2], copy=False)
 
 assert 3 == start_of_loop(lst)
+
+
+def start_of_loop_v2(ll):
+    s = ll[1]
+    f = ll[2]
+
+    while id(s) != id(f):
+        s = s.next
+        f = f.next.next
+
+    s = ll[0]
+    while id(s) != id(f):
+        s = s.next
+        f = f.next.next
+
+    return s
+
+
+assert 3 == start_of_loop_v2(lst)
