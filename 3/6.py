@@ -6,3 +6,13 @@ that type). They cannot select which specific animal they would like. Create the
 maintain this system and implement operations such as enqueue, dequeueAny, dequeueDog,
 and dequeueCat. You may use the built-in Linked List data structure.
 """
+from structures import Queue
+
+
+class Dog(Queue.Node):
+    pass
+
+
+class PetQueue(Queue):
+    def dequeue_dog(self):
+        pass

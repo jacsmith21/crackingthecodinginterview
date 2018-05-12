@@ -1,92 +1,54 @@
-class Stack:
-    class Node:
-        def __init__(self, data):
-            self.data = data
-            self.next = None
-
-    def __init__(self):
-        self.top = None
-
-    def pop(self):
-        data = self.top.data
-        self.top = self.top.next
-        return data
-
-    def push(self, data):
-        node = Stack.Node(data)
-        node.next = self.top
-        self.top = node
-
-    def peek(self):
-        return self.top.data
-
-    def empty(self):
-        return self.top is None
+class EmptyException(Exception):
+    pass
 
 
-class Queue:
-    class Node:
-        def __init__(self, data):
-            self.data = data
-            self.next = None
+class BaseNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
 
-    def __init__(self):
-        self.first = None
-        self.last = None
+    def __eq__(self, other):
+        if isinstance(other, List.Node):
+            return self.data == other.data
+        else:
+            return self.data == other
 
-    def remove(self):
-        node = self.first
-        self.first = self.first.next
-        return node
+    def __lt__(self, other):
+        if isinstance(other, List.Node):
+            other = other.data
 
-    def push(self, data):
-        node = Queue.Node(data)
-        self.last.next = node
-        self.first = node
+        return self.data < other
 
-    def peek(self):
-        return self.first.data
+    def __ge__(self, other):
+        if isinstance(other, List.Node):
+            other = other.data
 
-    def empty(self):
-        return self.first is None
+        return self.data >= other
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return str(self.data)
 
 
 class List:
-    class Node:
+    class Node(BaseNode):
         def __init__(self, data):
-            self.data = data
-            self.next = None
+            super().__init__(data)
             self.prev = None
 
-        def __eq__(self, other):
-            if isinstance(other, List.Node):
-                return self.data == other.data
-            else:
-                return self.data == other
-
-        def __lt__(self, other):
-            if isinstance(other, List.Node):
-                other = other.data
-
-            return self.data < other
-
-        def __ge__(self, other):
-            if isinstance(other, List.Node):
-                other = other.data
-
-            return self.data >= other
-
-        def __repr__(self):
-            return self.__str__()
-
-        def __str__(self):
-            return str(self.data)
-
-    def __init__(self, *nums):
+    def __init__(self, *nums, reverse=False):
         self.head = None
         self.tail = None
-        for n in nums:
-            self.append(n)
+        self.len = 0
+
+        if reverse:
+            for n in reversed(nums):
+                self.append(n)
+        else:
+            for n in nums:
+                self.append(n)
 
     def append(self, data, copy=True):
         if not isinstance(data, List.Node):
@@ -107,6 +69,8 @@ class List:
             self.tail.next = end
             end.prev = self.tail
             self.tail = end
+
+        self.len += 1
 
     def __contains__(self, node):
         for n in self:
@@ -140,6 +104,9 @@ class List:
                 return n
         else:
             return None
+
+    def __len__(self):
+        return self.len
 
     @staticmethod
     def remove(node):
@@ -187,3 +154,56 @@ class List:
 
     def __repr__(self):
         return self.__str__()
+
+
+class Stack(List):
+    class Node(BaseNode):
+        pass
+
+    def __init__(self, *nums):
+        super().__init__(*nums, reverse=True)
+
+    def pop(self):
+        if self.empty():
+            raise EmptyException
+
+        data = self.tail.data
+        prev = self.tail.prev
+        if prev is not None:
+            prev.next = None
+        else:
+            self.head = None
+
+        self.tail = prev
+
+        self.len -= 1
+        return data
+
+    def push(self, data):
+        self.append(data)
+
+    def peek(self):
+        return self.tail.data
+
+    def empty(self):
+        return self.tail is None
+
+
+class Queue(List):
+    class Node(BaseNode):
+        pass
+
+    def remove(self):
+        if self.empty():
+            raise EmptyException
+
+        node = self.head
+        self.head = self.head.next
+        self.len -= 1
+        return node
+
+    def add(self, data):
+        self.append(data)
+
+    def empty(self):
+        return self.head is None
