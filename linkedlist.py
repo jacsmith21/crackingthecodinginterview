@@ -9,3 +9,9 @@ class Node:
             n = n.next
 
         n.next = end
+
+
+def init(*nums):
+    head = Node(nums[0])
+    for i in range(1, len(nums)):
+        head.append(nums[i])
