@@ -7,4 +7,9 @@ to be after the elements less than x (see below). The partition element x can ap
 Input: 3 -> 5 -> 8 -> 5 - > 10 -> 2 -> 1 [partition = 5)
 Output: 3 -> 1 -> 2 -> 10 -> 5 -> 5 -> 8
 """
+from structures import List
 
+lst = List(3, 5, 8, 5, 10, 2, 1)
+lst.partition(5)
+
+assert lst == (3, 2, 1, 5, 8, 5, 10)

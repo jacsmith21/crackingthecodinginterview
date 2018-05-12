@@ -12,4 +12,9 @@ Suppose the digits are stored in forward order. Repeat the above problem.
 Input: (6 -) 1 -) 7) + (2 -) 9 -) 5).Thatis,617 + 295.
 Output: 9 -) 1 -) 2. That is, 912.
 """
+from structures import List
 
+l1 = List(7, 1, 6)
+l2 = List(5, 9, 2)
+
+assert 912 == l1 + l2
