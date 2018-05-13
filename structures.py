@@ -293,7 +293,9 @@ class Tree:
             return self.__str__()
 
         def __eq__(self, other):
-            if self.l is None and self.r is None:
+            try:
+                iter(other)
+            except TypeError:
                 return self.data == other
 
             for this, that in zip(self, other):
