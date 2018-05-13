@@ -1,6 +1,3 @@
-from itertools import chain
-
-
 class EmptyException(Exception):
     pass
 
@@ -32,7 +29,7 @@ class BaseNode:
         return self.__str__()
 
     def __str__(self):
-        return str(self.data)
+        return 'Node({})'.format(str(self.data))
 
 
 class List:
@@ -54,7 +51,10 @@ class List:
                 self.append(n)
 
     def append(self, data, copy=True):
-        if not isinstance(data, BaseNode):
+        if isinstance(data, List):
+            self.append(data.head)
+            return
+        elif not isinstance(data, BaseNode):
             if not copy:
                 raise ValueError('data is not Node, but copy is set to False')
 
@@ -262,12 +262,55 @@ class Tree:
                 return []
 
         def __iter__(self):
-            for v in chain(*map(iter, self.children)):
-                yield v
+            if self.l is not None:
+                for v in self.l:
+                    yield v
             yield self.data
+            if self.r is not None:
+                for v in self.r:
+                    yield v
 
-    def __init__(self):
+        def __str__(self):
+            return ', '.join([str(n) for n in self])
+
+        def __repr__(self):
+            return self.__str__()
+
+        def __eq__(self, other):
+            if self.l is None and self.r is None:
+                return self.data == other
+
+            for this, that in zip(self, other):
+                if this != that:
+                    return False
+            else:
+                return True
+
+    def __init__(self, *nums):
+        nodes = [Tree.Node(item) for item in nums]
         self.root = None
+        self.root = self.initiate(nodes)
+
+    def initiate(self, nums):
+        if len(nums) == 0:
+            return None
+
+        index = int(len(nums) / 2)
+        middle = nums[index]
+        middle = Tree.Node(middle)
+        middle.l = self.initiate(nums[:index])
+        middle.r = self.initiate(nums[(index + 1):])
+
+        return middle
 
     def __iter__(self):
         return iter(self.root)
+
+    def __str__(self):
+        return self.root.__str__() if self.root is not None else 'Empty Tree'
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        return self.root.__eq__(other)
