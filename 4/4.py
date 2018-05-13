@@ -35,4 +35,3 @@ tree = Tree.Node(0)
 tree.l = Tree.Node(1)
 tree.l.l = Tree.Node(2)
 assert not balanced(tree)[0]
-assert not balanced(tree)[0]

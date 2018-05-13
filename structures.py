@@ -25,6 +25,12 @@ class BaseNode:
 
         return self.data >= other
 
+    def __gt__(self, other):
+        if isinstance(other, BaseNode):
+            other = other.data
+
+        return self.data > other
+
     def __repr__(self):
         return self.__str__()
 
@@ -224,8 +230,10 @@ class Graph:
         def __iter__(self):
             return iter(self.children)
 
-    def __init__(self):
+    def __init__(self, *nodes):
         self.nodes = {}
+        for node in nodes:
+            self.nodes[node.data] = node
 
     def add(self, a, b):
         a = self[a]
@@ -247,19 +255,27 @@ class Tree:
     class Node(BaseNode):
         def __init__(self, key):
             super().__init__(key)
-            self.l = None
-            self.r = None
+            self._l = None
+            self._r = None
+            self.parent = None
 
         @property
-        def children(self):
-            if self.l is not None and self.r is not None:
-                return [self.l, self.r]
-            elif self.l is not None:
-                return [self.l]
-            elif self.r is not None:
-                return [self.r]
-            else:
-                return []
+        def l(self):
+            return self._l
+
+        @l.setter
+        def l(self, l):
+            self._l = l
+            self._l.parent = self
+
+        @property
+        def r(self):
+            return self._r
+
+        @r.setter
+        def r(self, r):
+            self._r = r
+            self._r.parent = self
 
         def __iter__(self):
             if self.l is not None:
