@@ -298,11 +298,20 @@ class Tree:
             except TypeError:
                 return self.data == other
 
+            if len(self) != len(other):
+                return False
+
             for this, that in zip(self, other):
                 if this != that:
                     return False
             else:
                 return True
+
+        def __len__(self):
+            length = 1
+            length += len(self.l) if self.l is not None else 0
+            length += len(self.r) if self.r is not None else 0
+            return length
 
     def __init__(self, *nums):
         nodes = [Tree.Node(item) for item in nums]

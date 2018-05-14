@@ -9,8 +9,6 @@ SetOfStacks. push () and SetOfStacks. pop () should behave identically to a sing
 FOLLOW UP
 Implement a function popAt (int index) which performs a pop operation on a specific sub-stack.
 """
-import pytest
-
 from structures import Stack, EmptyException
 
 
