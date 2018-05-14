@@ -4,6 +4,7 @@ Implement a function to check if a binary tree is a binary search tree.
 from structures import Tree
 
 
+# TODO: Fix this algorithm
 def binary_tree(node):
     if node is None:
         return True
@@ -18,7 +19,7 @@ def binary_tree(node):
     elif not binary_tree(node.r):
         return False
 
-    return True
+    return True,
 
 
 tree = Tree.Node(1)

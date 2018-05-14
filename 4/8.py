@@ -11,7 +11,7 @@ necessarily a binary search tree.
 # recurse back and return the previous  THis option would be much more space intensive but a cleaner solution.
 
 # For both of these solutions, it may be useful to move and check at the same time to improve the best cast scenario.
-
+import data
 from structures import Tree
 
 
@@ -49,25 +49,7 @@ def reset(node):
     reset(node.r)
 
 
-""" 
-      0
-     /
-    1
-   / \
-  2   3
- /\  / \
-4  56   7
-"""
-tree = SeenNode(0)
-tree.l = SeenNode(1)
-tree.l.l = SeenNode(2)
-tree.l.l.l = SeenNode(4)
-tree.l.l.r = SeenNode(5)
-tree.l.r = SeenNode(3)
-tree.l.r.l = SeenNode(5)
-tree.l.r.r = SeenNode(7)
-
-
+tree = data.tree
 assert 3 == common(tree.l.r.l, tree.l.r.r)
 
 reset(tree)
