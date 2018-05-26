@@ -341,3 +341,42 @@ class Tree:
 
     def __eq__(self, other):
         return self.root.__eq__(other)
+
+
+class Binary(int):
+    @staticmethod
+    def from_decimal(value):
+        return Binary(int(str(value), 2))
+
+    def __repr__(self):
+        return bin(self)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __lshift__(self, other):
+        return Binary(super().__lshift__(other))
+
+    def __rshift__(self, other):
+        return Binary(super().__rshift__(other))
+
+    def __sub__(self, other):
+        return Binary(super().__sub__(other))
+
+    def __or__(self, other):
+        return Binary(super().__or__(other))
+
+    def __ror__(self, other):
+        return Binary(super().__ror__(other))
+
+    def __and__(self, other):
+        return Binary(super().__and__(other))
+
+    def __rand__(self, other):
+        return Binary(super().__rand__(other))
+
+    def __iter__(self):
+        binary = self.__repr__()
+        binary = binary[2:]
+        binary = list(map(int, binary))
+        return iter(binary)
