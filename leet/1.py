@@ -36,32 +36,41 @@ class Solution:
         :type edges: List[List[int]]
         :rtype: List[int]
         """
-        seen = [False] * len(edges)
-        seen[0] = True
-        edge_map = {}
-        double_parent = None
+        i_child = None
+        parent1 = None
+        parent2 = None
+
+        relationships = {}
         for edge in edges:
-            source = edge[0] - 1
-            target = edge[1] - 1
+            parent = edge[0] - 1
+            child = edge[1] - 1
 
-            if source not in edge_map:
-                edge_map[source] = []
-            edge_map[source].append(target)
+            if child == 0:
+                return edge
 
-            if seen[target]:
-                double_parent = target
-            seen[target] = True
-
-
-    def check_in_path(self, source, target, edges):
-        for child in edges[source]:
-            if child == target:
-                return True
+            if child in relationships:
+                i_child = child
+                parent1 = relationships[child]
+                parent2 = parent
             else:
-                return self.check_in_path(child, target, edges)
+                relationships[child] = parent
+
+        if self.in_path(parent1, i_child, relationships):
+            return [parent1 + 1, i_child + 1]
+        else:
+            return [parent2 + 1, i_child + 1]
+
+    def in_path(self, source, target, edges):
+        if source == target:
+            return True
+        else:
+            if source in edges:
+                return self.in_path(edges[source], target, edges)
+            else:
+                return False
 
 
-assert Solution().findRedundantDirectedConnection([[4, 2], [1, 5], [5, 2], [5, 3], [2, 4]]) == [4, 2]
 assert Solution().findRedundantDirectedConnection([[1, 2], [1, 3], [2, 3]]) == [2, 3]
 assert Solution().findRedundantDirectedConnection([[1, 2], [1, 4], [2, 3], [4, 3]]) == [4, 3]
 assert Solution().findRedundantDirectedConnection([[1, 2], [2, 3], [3, 4], [4, 1], [1, 5]]) == [4, 1]
+assert Solution().findRedundantDirectedConnection([[4, 2], [1, 5], [5, 2], [5, 3], [2, 4]]) == [4, 2]
