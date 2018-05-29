@@ -1,8 +1,17 @@
 # crackingthecodinginterview
 My solutions to Cracking the Coding Interview questions!
 
-# Running an Example
+## Running C++ Example
 ```
-alias g++17='g++ -std=c++17'
-g++17 <questions_number>.cpp; ./a.out
+g++ -std=c++17 <number>.cpp; ./a.out
+```
+
+## Running Python Examples
+Some examples use pytest while others do not. I started using pytest so that I could actually see why my assertion failed!
+```
+python <number>.py
+```
+**or**
+```
+pytest <number>.py
 ```

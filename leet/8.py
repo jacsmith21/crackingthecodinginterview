@@ -1,43 +1,71 @@
 """
-Given a list of points that form a polygon when joined sequentially, find if this polygon is convex (Convex polygon definition).
+Implement atoi which converts a string to an integer.
+
+The function first discards as many whitespace characters as necessary until the first non-whitespace character is found. Then, starting from this character, takes an optional initial plus or minus sign followed by as many numerical digits as possible, and interprets them as a numerical value.
+
+The string can contain additional characters after those that form the integral number, which are ignored and have no effect on the behavior of this function.
+
+If the first sequence of non-whitespace characters in str is not a valid integral number, or if no such sequence exists because either str is empty or it contains only whitespace characters, no conversion is performed.
+
+If no valid conversion could be performed, a zero value is returned.
 
 Note:
-There are at least 3 and at most 10,000 points.
-Coordinates are in the range -10,000 to 10,000.
-You may assume the polygon formed by given points is always a simple polygon (Simple polygon definition). In other words, we ensure that exactly two edges intersect at each vertex,
-and that edges otherwise don't intersect each other.
+
+Only the space character ' ' is considered as whitespace character.
+Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. If the numerical value is out of the range of representable values, INT_MAX (231 − 1) or INT_MIN (−231) is returned.
+Example 1:
+
+Input: "42"
+Output: 42
+Example 2:
+
+Input: "   -42"
+Output: -42
+Explanation: The first non-whitespace character is '-', which is the minus sign.
+             Then take as many numerical digits as possible, which gets 42.
+Example 3:
+
+Input: "4193 with words"
+Output: 4193
+Explanation: Conversion stops at digit '3' as the next character is not a numerical digit.
+Example 4:
+
+Input: "words and 987"
+Output: 0
+Explanation: The first non-whitespace character is 'w', which is not a numerical
+             digit or a +/- sign. Therefore no valid conversion could be performed.
+Example 5:
+
+Input: "-91283472332"
+Output: -2147483648
+Explanation: The number "-91283472332" is out of the range of a 32-bit signed integer.
+Thefore INT_MIN (−231) is returned.
 """
+import re
 
 
 class Solution:
-    def isConvex(self, points):
+    def myAtoi(self, str):
         """
-        :type points: List[List[int]]
-        :rtype: bool
+        :type str: str
+        :rtype: int
         """
-        prev_cross_product = 0
-        for i, point in enumerate(points):
-            prev_point = points[i - 1]
-            next_point = points[(i + 1) % len(points)]
-            dx1, dy1 = self.d(point, prev_point)
-            dx2, dy2 = self.d(next_point, point)
-            cross_product = dx1 * dy2 - dx2 * dy1
+        match = re.match('\s*([+-])?([0-9]+).*?', str)
+        if match is None:
+            return 0
 
-            if cross_product != 0:
-                if cross_product * prev_cross_product < 0:
-                    return False
-                else:
-                    prev_cross_product = cross_product
+        sign, value = match.group(1), int(match.group(2))
+        if sign == '-':
+            value = value * -1
 
-        return True
-
-    @staticmethod
-    def d(p1, p2):
-        return p1[0] - p2[0], p1[1] - p2[1]
+        return max(-(2**31), min(2**31-1, value))
 
 
-s = Solution()
-assert s.isConvex([[0, 0], [0, 1], [1, 1], [1, 0]])
-assert s.isConvex([[0, 0], [1, 0], [2, 1], [1, 2], [0, 2]])
-assert not s.isConvex([[0, 0], [0, 10], [10, 10], [10, 0], [5, 5]])
-assert not s.isConvex([[0, 0], [0, 1], [1, 1], [2, 1], [2, 2], [2, 3], [3, 3], [3, 0]])
+def test(s):
+    assert s.myAtoi('   -42') == -42
+    assert s.myAtoi('42') == 42
+    assert s.myAtoi('4193 with words') == 4193
+    assert s.myAtoi('wors with 300') == 0
+    assert s.myAtoi('-91283472332') == -2147483648
+    assert s.myAtoi('91283472332') == 2147483647
+    assert s.myAtoi('') == 0

@@ -14,10 +14,9 @@ Return ["JFK","ATL","JFK","SFO","ATL","SFO"].
 Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"]. But it is larger in lexical order.
 """
 from collections import defaultdict, OrderedDict
-from collections import deque
 
 
-class Solution:
+class SolutionV2:
     def findItinerary(self, tickets):
         """
         :type tickets: List[List[str]]
@@ -80,7 +79,7 @@ class Solution:
                 return [node.name, *self.recurse(smallest)]
 
 
-class Solution2:
+class Solution:
     def findItinerary(self, tickets):
         """
         :type tickets: List[List[str]]
@@ -119,7 +118,7 @@ class Solution2:
         return [src, *order]
 
 
-s = Solution2()
+s = Solution()
 assert s.findItinerary([["JFK", "SFO"], ["JFK", "ATL"], ["SFO", "ATL"], ["ATL", "JFK"], ["ATL", "SFO"]]) == ["JFK", "ATL", "JFK", "SFO", "ATL", "SFO"]
 assert s.findItinerary([["JFK", "KUL"], ["JFK", "NRT"], ["NRT", "JFK"]]) == ["JFK", "NRT", "JFK", "KUL"]
 assert s.findItinerary([["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]) == ["JFK", "MUC", "LHR", "SFO", "SJC"]
