@@ -1,37 +1,50 @@
-import sys
+"""
+Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+
+Example 1:
+
+Input: "babad"
+Output: "bab"
+Note: "aba" is also a valid answer.
+Example 2:
+
+Input: "cbbd"
+Output: "bb"
+"""
 
 
 class Solution:
-    # noinspection PyMethodMayBeStatic
-    def findRadius(self, houses, heaters):
+    def longestPalindrome(self, s):
         """
-        :type houses: List[int]
-        :type heaters: List[int]
-        :rtype: int
+        :type s: str
+        :rtype: str
         """
-        houses = sorted(houses)
-        heaters = sorted(heaters)
+        max_count = 0
+        max_left = 0
+        max_right = 0
+        for center in range(len(s) * 2 - 1):
+            if center % 2 == 0:
+                left = center // 2 - 1
+                right = center // 2 + 1
+                count = 1
+            else:
+                left = center // 2
+                right = left + 1
+                count = 0
 
-        maximum = 0
-        for house in houses:
-            i = 0
-            distance = sys.maxsize
-            index = i
-            while i < len(heaters) and abs(house - heaters[i]) < distance:
-                index = i
-                distance = abs(house - heaters[i])
-                i += 1
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                count += 2
+                left -= 1
+                right += 1
+            else:
+                if count > max_count:
+                    max_count = count
+                    max_left = left + 1
+                    max_right = right - 1
 
-            radius = abs(house - heaters[index])
-            if radius > maximum:
-                maximum = radius
-
-        return maximum
+        return s[max_left:max_right + 1]
 
 
-s = Solution()
-assert s.findRadius([282475249, 622650073, 984943658, 144108930, 470211272, 101027544, 457850878, 458777923],
-                    [823564440, 115438165, 784484492, 74243042, 114807987, 137522503, 441282327, 16531729, 823378840, 143542612]) == 161834419
-assert s.findRadius([1, 2, 3, 4], [1, 4]) == 1
-assert s.findRadius([1, 2, 3], [2]) == 1
-assert s.findRadius([1, 3], [2]) == 1
+def test(s):
+    assert s.longestPalindrome('babad') == 'bab'
+    assert s.longestPalindrome('cbbd') == 'bb'
