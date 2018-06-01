@@ -14,26 +14,66 @@ Note:
 Elements of the given array will be in range [-10,000, 10,000].
 The answer with the calculation error less than 10-5 will be accepted.
 """
+import numpy as np
+import tensortools.testing as tt
 
 
-class Solution:
+class SolutionV2:
     def findMaxAverage(self, nums, k):
         """
         :type nums: List[int]
         :type k: int
         :rtype: float
         """
-        count = 0
-        length = 0
-        largest = 0
-        for n in nums:
-            count += n
-            length += 1
+        r, l = 10000, -10000
+        while r - l > 0.000004:
+            mid = (l + r) / 2
+            if self.check(nums, k, mid):
+                l = mid
+            else:
+                r = mid
+        return r
 
-            if length < k:
-                continue
+    @staticmethod
+    def check(nums, k, x):
+        n = len(nums)
+        a = [0.0] * n
+        for i in range(n):
+            a[i] = nums[i] - x
 
+        now, last = 0, 0
+        for i in range(k):
+            now += a[i]
+
+        if now >= 0:
+            return True
+
+        for i in range(k, n):
+            now += a[i]
+            last += a[i - k]
+            if last < 0:
+                now -= last
+                last = 0
+            if now >= 0:
+                return True
+
+        return False
+
+
+class Solution:
+    def findMaxAverage(self, nums, k):
+        lo, hi = min(nums), max(nums)
+        nums = np.array([0] + nums)
+        while hi - lo > 1e-5:
+            mid = nums[0] = (lo + hi) / 2.
+            sums = (nums - mid).cumsum()
+            mins = np.minimum.accumulate(sums)
+            if (sums[k:] - mins[:-k]).max() > 0:
+                lo = mid
+            else:
+                hi = mid
+        return lo
 
 
 def test(s):
-    assert s.findMaxAverage([1, 12, -5, -6, 50, 3], k=4) == 12.75
+    assert tt.approx(s.findMaxAverage([1, 12, -5, -6, 50, 3], k=4), 12.75)
