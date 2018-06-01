@@ -11,7 +11,6 @@ Here are some examples. Inputs are in the left-hand column and its corresponding
 3,2,1 → 1,2,3
 1,1,5 → 1,5,1
 """
-import numpy as np
 
 
 class Solution:
@@ -20,31 +19,40 @@ class Solution:
         :type nums: List[int]
         :rtype: void Do not return anything, modify nums in-place instead.
         """
-        nums = np.asarray(nums)
-
-        i = len(nums) - 2
-        while i >= 0:
-            if nums[i] < nums[i + 1]:
-                break
+        i = len(nums) - 1
+        while nums[i - 1] >= nums[i]:
             i -= 1
+            if i <= 0:
+                break
         else:
-            nums.sort()
-            return nums
+            i -= 1  # going to the first number < than the next number
+            for j in range(len(nums) - 1, i, -1):  # check every number but not i
+                if nums[j] > nums[i]:
+                    break
+            else:
+                raise Exception('this shouldn\'t happen')
 
-        minimum = len(nums) - 1
-        for j in range(len(nums) - 2, i, -1):
-            minimum = nums[j] if nums[j] < nums[minimum] else minimum
+            nums[i], nums[j] = nums[j], nums[i]
+            i += 1
 
-        nums[i], nums[minimum] = nums[minimum], nums[i]
-        nums[:i].sort()
-
+        self.reverse(nums, i, len(nums) - 1)
         return nums
+
+    @staticmethod
+    def reverse(nums, i, j):
+        while i < j:
+            nums[i], nums[j] = nums[j], nums[i]
+            i += 1
+            j -= 1
 
 
 def test(s):
-    assert (s.nextPermutation([3, 2, 1]) == [1, 2, 3]).all()
-    assert (s.nextPermutation([1, 2, 3]) == [1, 3, 2]).all()
-    assert (s.nextPermutation([1, 3, 2]) == [2, 1, 3]).all()
-    assert (s.nextPermutation([1, 1, 5]) == [1, 5, 1]).all()
-    assert (s.nextPermutation([1, 4, 3, 2]) == [2, 1, 3, 4]).all()
-    assert (s.nextPermutation([1, 4, 5, 2]) == [1, 5, 2, 4]).all()
+    nums = [1, 2, 3, 4]
+    s.reverse(nums, 0, len(nums) - 1)
+    assert nums == [4, 3, 2, 1]
+    assert (s.nextPermutation([3, 2, 1]) == [1, 2, 3])
+    assert (s.nextPermutation([1, 2, 3]) == [1, 3, 2])
+    assert (s.nextPermutation([1, 3, 2]) == [2, 1, 3])
+    assert (s.nextPermutation([1, 1, 5]) == [1, 5, 1])
+    assert (s.nextPermutation([1, 4, 3, 2]) == [2, 1, 3, 4])
+    assert (s.nextPermutation([1, 4, 5, 2]) == [1, 5, 2, 4])
