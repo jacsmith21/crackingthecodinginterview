@@ -1,57 +1,29 @@
 """
+Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai)
+and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
 
-Equations are given in the format A / B = k, where A and B are variables represented as strings, and k is a real number (floating point number). Given some queries,
-return the answers. If the answer does not exist, return -1.0.
-
-Example:
-Given a / b = 2.0, b / c = 3.0.
-queries are: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ? .
-return [6.0, 0.5, -1.0, 1.0, -1.0 ].
-
-The input is: vector<pair<string, string>> equations, vector<double>& values, vector<pair<string, string>> queries , where equations.size() == values.size(), and the values are
-positive. This represents the equations. Return vector<double>.
-
-Example:
-equations = [ ["a", "b"], ["b", "c"] ],
-values = [2.0, 3.0],
-queries = [ ["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"] ].
+Note: You may not slant the container and n is at least 2.
 """
-from collections import defaultdict
 
 
 class Solution:
-    def calcEquation(self, equations, values, queries):
+    def maxArea(self, height):
         """
-        :type equations: List[List[str]]
-        :type values: List[float]
-        :type queries: List[List[str]]
-        :rtype: List[float]
+        :type height: List[int]
+        :rtype: int
         """
-        lookup = defaultdict(lambda: defaultdict(float))
-        for [c1, c2], value in zip(equations, values):
-            lookup[c1][c2] = value  # c1 / c2 = value
-            lookup[c2][c1] = 1 / value  # c2 / c1 =  1 / value
-
-        outputs = [self.search(query[0], query[1], lookup, defaultdict(bool)) for query in queries]
-        return [output[1] for output in outputs]
-
-    def search(self, start, target, lookup, seen):
-        if seen[start]:
-            return False, -1
-        else:
-            seen[start] = True
-
-        for key in lookup[start]:
-            if key == target:
-                return True, lookup[start][key]
+        l, r = 0, len(height) - 1
+        water = 0
+        while l < r:
+            water = max(water, (r - l) * min(height[l], height[r]))
+            if height[l] < height[r]:
+                l += 1
             else:
-                found, res = self.search(key, target, lookup, seen)
-                if not found:
-                    continue
-                return True, lookup[start][key] * res
-        else:
-            return False, -1
+                r -= 1
+        return water
 
 
-s = Solution()
-assert s.calcEquation([["a", "b"], ["b", "c"]], [2, 3], [["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"]]) == [6, 0.5, -1, 1, -1]
+def test(s):
+    s.maxArea([2, 1, 5, 5]) == 8
+    s.maxArea([2, 5, 1, 5]) == 10
+

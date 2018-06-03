@@ -28,6 +28,13 @@ class Solution:
             self.children = {}
 
     def wordBreak(self, s, wordDict):
+        ok = [False] * (len(s) + 1)
+        ok[0] = True
+        for i in range(1, len(s) + 1):
+            ok[i] = any([ok[j] and s[j:i] in wordDict for j in range(i)])
+        return ok[-1]
+
+    def wordBreakV2(self, s, wordDict):
         """
         :type s: str
         :type wordDict: List[str]
@@ -38,53 +45,39 @@ class Solution:
 
         start = self.Node()
         for word in wordDict:
-            prev = start
-            for c in word:
-                if c in prev.children:
-                    prev = prev.children[c]
-                else:
-                    prev.children[c] = [self.Node()]
-                    prev = prev.children[c][0]
+            self.construct(word, 0, start, start)
 
         return self.dfs(s, 0, start, start)
 
-    def construct(self, string, index, node):
-        char = string[index]
-        if char in node.children:
-            for child in node.children[char]:
-                if self.construct(string, index + 1, child):
-                    break
-            else:
-                node.children[char].append(self.Node())
-                return True
+    def construct(self, string, index, node, start):
+        if index == len(string):
+            node.children[start] = start
+            return
 
-        else:
-            node.children[char] = [self.Node()]
-            return True
+        char = string[index]
+        if char not in node.children:
+            node.children[char] = self.Node()
+        self.construct(string, index + 1, node.children[char], start)
 
     def dfs(self, string, index, node, start):
-        if not node.children:
+        if start in node.children:
             if index == len(string):
                 return True
             else:
-                return self.dfs(string, index, start, start)
+                if self.dfs(string, index, start, start):
+                    return True
 
-        if len(string) <= index:
+        if index >= len(string):
             return False
 
         if string[index] not in node.children:
             return False
 
-        for child in node.children[string[index]]:
-            if not self.dfs(string, index + 1, child, start):
-                continue
-            else:
-                return True
-        else:
-            return False
+        return self.dfs(string, index + 1, node.children[string[index]], start)
 
 
 def test(s):
+    assert s.wordBreak('aaaaaaa', {"aaaa", "aaa"})
     assert not s.wordBreak('leetcode', {})
     assert not s.wordBreak('aaaaaaa', {"aaaa", "aa"})
     assert s.wordBreak('aaaaaa', {"aaaa", "aa"})

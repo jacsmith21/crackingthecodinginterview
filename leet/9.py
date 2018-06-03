@@ -1,50 +1,44 @@
 """
-Reverse a linked list from position m to n. Do it in one-pass.
+Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.
 
-Note: 1 ≤ m ≤ n ≤ length of list.
+Example 1:
 
-Example:
-Input: 1->2->3->4->5->NULL, m = 2, n = 4
-Output: 1->4->3->2->5->NULL
+Input: 121
+Output: true
+Example 2:
+
+Input: -121
+Output: false
+Explanation: From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.
+Example 3:
+
+Input: 10
+Output: false
+Explanation: Reads 01 from right to left. Therefore it is not a palindrome.
+Follow up:
+
+Coud you solve it without converting the integer to a string?
 """
-from structures import List
 
 
 class Solution:
-    def reverseBetween(self, head, m, n):
+    def isPalindrome(self, x):
         """
-        :type head: ListNode
-        :type m: int
-        :type n: int
-        :rtype: ListNode
+        :type x: int
+        :rtype: bool
         """
-        if m == n:
-            return head
+        x = str(x)
 
-        i = 1
-        prev = None
-        curr = head
-        while i != m:
-            prev = curr
-            curr = curr.next
-            i += 1
-
-        one_before = prev  # one before the start of the reverse
-        new_end = curr  # the new end of the given interval
-
-        nxt = curr.next
-        while i != n:
-            nxt.next, curr, nxt = curr, nxt, nxt.next
-            i += 1
-
-        new_end.next = nxt
-
-        if one_before is not None:
-            one_before.next = curr
-            return head
-        else:
-            return curr
+        l, r = 0, len(x) - 1
+        while l < r:
+            if x[l] != x[r]:
+                return False
+            l += 1
+            r -= 1
+        return True
 
 
-s = Solution()
-assert s.reverseBetween(List(1, 2, 3, 4, 5).head, 3, 4) == [1, 2, 4, 3, 5]
+def test(s):
+    assert s.isPalindrome(121)
+    assert not s.isPalindrome(-121)
+    assert not s.isPalindrome(10)

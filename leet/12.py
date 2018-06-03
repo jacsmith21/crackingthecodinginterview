@@ -1,62 +1,66 @@
 """
-Given a positive 32-bit integer n, you need to find the smallest 32-bit integer which has exactly the same digits existing in the integer n and is greater in value than n. If no such positive 32-bit integer exists, you need to return -1.
+Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+
+Symbol       Value
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+For example, two is written as II in Roman numeral, just two one's added together. Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+
+Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+
+I can be placed before V (5) and X (10) to make 4 and 9.
+X can be placed before L (50) and C (100) to make 40 and 90.
+C can be placed before D (500) and M (1000) to make 400 and 900.
+Given an integer, convert it to a roman numeral. Input is guaranteed to be within the range from 1 to 3999.
 
 Example 1:
-Input: 12
-Output: 21
 
-
+Input: 3
+Output: "III"
 Example 2:
-Input: 21
-Output: -1
+
+Input: 4
+Output: "IV"
+Example 3:
+
+Input: 9
+Output: "IX"
+Example 4:
+
+Input: 58
+Output: "LVIII"
+Explanation: C = 100, L = 50, XXX = 30 and III = 3.
+Example 5:
+
+Input: 1994
+Output: "MCMXCIV"
+Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 """
 
 
 class Solution:
-    def nextGreaterElement(self, n):
+    def __init__(self):
+        def make(a, b, c):
+            return ['', a, a+a, a+a+a, a+b, b, b+a, b+a+a, b+a+a+a, a+c]
+        self.single = make('I', 'V', 'X')
+        self.double = make('X', 'L', 'C')
+        self.triple = make('C', 'D', 'M')
+        self.quad = make('M', '', '')
+
+    def intToRoman(self, num):
         """
-        :type n: int
-        :rtype: int
+        :type num: int
+        :rtype: str
         """
-        n = [int(d) for d in str(n)]
-        lookup = {}
-        previous = None
-        for i in reversed(range(len(n))):
-            digit = n[i]
-
-            if previous is not None and digit < previous:
-                break
-
-            previous = digit
-            lookup[digit] = i
-        else:
-            return -1
-
-        for j in range(digit + 1, 10):
-            if j not in lookup:
-                continue
-
-            index = lookup[j]
-            n[i], n[index] = n[index], n[i]
-
-            n[i + 1:] = sorted(n[i + 1:])
-
-            res = 0
-            power = 0
-            for k in reversed(range(len(n))):
-                res += 10 ** power * n[k]
-                power += 1
-
-            if res <= 2147483647:
-                return res
-            else:
-                return -1
+        return ''.join([self.quad[num//1000 % 10], self.triple[num//100 % 10], self.double[num//10 % 10], self.single[num % 10]])
 
 
-s = Solution()
-assert s.nextGreaterElement(12) == 21
-assert s.nextGreaterElement(21) == -1
-assert s.nextGreaterElement(123) == 132
-assert s.nextGreaterElement(341) == 413
-assert s.nextGreaterElement(465) == 546
-assert s.nextGreaterElement(4655) == 5456
+def test(s):
+    assert s.intToRoman(3) == 'III'
+    assert s.intToRoman(58) == 'LVIII'
+    assert s.intToRoman(1994) == 'MCMXCIV'

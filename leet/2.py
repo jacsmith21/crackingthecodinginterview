@@ -1,57 +1,61 @@
 """
-Say you have an array for which the ith element is the price of a given stock on day i.
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
 
-Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times) with the following restrictions:
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
 
-You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
-After you sell your stock, you cannot buy stock on next day. (ie, cooldown 1 day)
+Example
 
-Example:
-Input: [1,2,3,0,2]
-Output: 3
-Explanation: transactions = [buy, sell, cooldown, buy, sell]
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
+Explanation: 342 + 465 = 807.
 """
 
-# Actions:
-# buy and sell
-# buy hold sell
-import sys
+
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+    def __eq__(self, other):
+        node = self
+        for val in other:
+            if node is None or val != node.val:
+                return False
+            else:
+                node = node.next
+        return True
 
 
 class Solution:
-    def maxProfit(self, prices):
-        """
-        :type prices: List[int]
-        :rtype: int
-        """
-        if len(prices) <= 1:
-            return 0
-
-        s0prev = 0
-        s1prev = -sys.maxsize - 1
-        s2prev = -sys.maxsize - 1
-
-        for p in prices:
-            s0 = max(s0prev, s2prev)
-            s1 = max(s1prev, s0prev - p)
-            s2 = max(s2prev, s1prev + p)
-            s0prev = s0
-            s1prev = s1
-            s2prev = s2
-            print()
-
-        # noinspection PyUnboundLocalVariable
-        return max(s0, s2)
+    def addTwoNumbers(self, l1, l2, carry=0):
+        if l1 is None and l2 is None:
+            return None if carry is 0 else ListNode(carry)
+        elif l1 is None:
+            carry, val = divmod(l2.val + carry, 10)
+            node = ListNode(val)
+            node.next = self.addTwoNumbers(l1, l2.next, carry=carry)
+        elif l2 is None:
+            carry, val = divmod(l1.val + carry, 10)
+            node = ListNode(val)
+            node.next = self.addTwoNumbers(l1.next, l2, carry=carry)
+        else:
+            carry, val = divmod(l1.val + l2.val + carry, 10)
+            node = ListNode(val)
+            node.next = self.addTwoNumbers(l1.next, l2.next, carry=carry)
+        return node
 
 
-s = Solution()
-assert s.maxProfit([1, 2, 3, 0, 2]) == 3
-assert s.maxProfit([1, 2, 0, 1]) == 1
-assert s.maxProfit([1, 2, 0]) == 1
-assert s.maxProfit([1]) == 0
-assert s.maxProfit([1, 2, 5]) == 4
-assert s.maxProfit([1, 2]) == 1
-assert s.maxProfit([5, 4, 2, 0, 20]) == 20
-assert s.maxProfit([3, 4, 0, 2, 20]) == 20
-assert s.maxProfit([1, 0, 3, 3, 0, 2]) == 5
-assert s.maxProfit([2, 3, 0, 2]) == 2
+def test(s):
+    def make(nums):
+        start = ListNode(nums[0])
+        node = start
+        for n in nums[1:]:
+            node.next = ListNode(n)
+            node = node.next
+        return start
+
+    assert s.addTwoNumbers(make([9, 9]), make([1])) == [0, 0, 1]
+    assert s.addTwoNumbers(make([5]), make([5])) == [0, 1]
+    assert s.addTwoNumbers(make([2, 4, 3]), make([5, 6, 4, 1, 6])) == [7, 0, 8, 1, 6]
+    assert s.addTwoNumbers(make([2]), None) == [2]

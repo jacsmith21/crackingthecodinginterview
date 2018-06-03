@@ -1,39 +1,39 @@
 """
-
-Given an integer array nums, find the contiguous subarray within an array (containing at least one number) which has the largest product.
+Given a 32-bit signed integer, reverse digits of an integer.
 
 Example 1:
 
-Input: [2,3,-2,4]
-Output: 6
-Explanation: [2,3] has the largest product 6.
+Input: 123
+Output: 321
 Example 2:
 
-Input: [-2,0,-1]
-Output: 0
-Explanation: The result cannot be 2, because [-2,-1] is not a subarray.
+Input: -123
+Output: -321
+Example 3:
+
+Input: 120
+Output: 21
+Note:
+Assume we are dealing with an environment which could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. For the purpose of this problem, assume that
+your function returns 0 when the reversed integer overflows.
 """
 
 
 class Solution:
-    def maxProduct(self, nums):
-        maxima = nums[0]
-        local_min = nums[0]
-        local_max = nums[0]
-
-        for i in range(1, len(nums)):
-            num = nums[i]
-            if num > 0:
-                local_max, local_min = max(local_max * num, num), min(local_min * num, num)
-            else:
-                local_max, local_min = max(local_min * num, num), min(local_max * num, num)
-            maxima = max(maxima, local_max)
-
-        return maxima
+    def reverse(self, x):
+        """
+        :type x: int
+        :rtype: int
+        """
+        neg = -1 if x < 0 else 1
+        x = abs(x)
+        num = neg * int(''.join([c for c in reversed(str(x))]))
+        num = 0 if num < -2 ** 31 or num > 2 ** 31 - 1 else num
+        return num
 
 
-s = Solution()
-assert 6 == s.maxProduct([2, 3, -2, 4])
-assert 0 == s.maxProduct([-2, 0, -1])
-assert 1008 == s.maxProduct([1, -3, -5, -2, 0, 4, 9, 0, 3, -8, 7, -6])
-assert 48 == s.maxProduct([0, 3, -2, 4, -2])
+def test(s):
+    assert s.reverse(1534236469) == 0
+    assert s.reverse(123) == 321
+    assert s.reverse(-123) == -321
+    assert s.reverse(120) == 21
