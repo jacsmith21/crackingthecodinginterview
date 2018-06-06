@@ -1,73 +1,104 @@
 """
-Given a string, your task is to count how many palindromic substrings in this string.
+Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
 
-The substrings with different start indexes or end indexes are counted as different substrings even they consist of same characters.
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+The matching should cover the entire input string (not partial).
 
+Note:
+
+s could be empty and contains only lowercase letters a-z.
+p could be empty and contains only lowercase letters a-z, and characters like . or *.
 Example 1:
-Input: "abc"
-Output: 3
-Explanation: Three palindromic strings: "a", "b", "c".
+
+Input:
+s = "aa"
+p = "a"
+Output: false
+Explanation: "a" does not match the entire string "aa".
 Example 2:
-Input: "aaa"
-Output: 6
-Explanation: Six palindromic strings: "a", "a", "a", "aa", "aa", "aaa".
+
+Input:
+s = "aa"
+p = "a*"
+Output: true
+Explanation: '*' means zero or more of the precedeng element, 'a'. Therefore, by repeating 'a' once, it becomes "aa".
+Example 3:
+
+Input:
+s = "ab"
+p = ".*"
+Output: true
+Explanation: ".*" means "zero or more (*) of any character (.)".
+Example 4:
+
+Input:
+s = "aab"
+p = "c*a*b"
+Output: true
+Explanation: c can be repeated 0 times, a can be repeated 1 time. Therefore it matches "aab".
+Example 5:
+
+Input:
+s = "mississippi"
+p = "mis*is*p*."
+Output: false
 """
 
 
-class Solution:
-    def countSubstrings(self, s):
+class Solution(object):
+    def isMatch(self, s, p):
         """
         :type s: str
-        :rtype: int
+        :type p: str
+        :rtype: bool
         """
-        lookup = {}
-        count = 0
-        for i in range(len(s)):
-            length = i + 1
-            for j in range(len(s) - i):
-                sub = s[j:j + length]
-                if sub not in lookup and not self.is_palindromic(sub):
-                    continue
-                lookup[sub] = True
-                count += 1
-        return count
 
-    @staticmethod
-    def is_palindromic(string):
+        class Node:
+            def __init__(self):
+                self.children = {}
+
+        auto = Node()
+        start = node = Node()
         i = 0
-        j = len(string) - 1
-        while i < j:
-            if string[i] != string[j]:
+        while i < len(p):
+            if i + 1 < len(p) and p[i + 1] == '*':
+                node.children[p[i]] = node
+                node.children[auto] = Node()
+                node = node.children[auto]
+                i += 2
+            else:
+                node.children[p[i]] = Node()
+                node = node.children[p[i]]
+                i += 1
+
+        return self.recurse(s, 0, start, auto)
+
+    def recurse(self, s, i, node, auto):
+        if len(s) == i:
+            if auto in node.children and not node.children[auto].children:
+                return True
+            elif not node.children:
+                return True
+            else:
                 return False
-            i += 1
-            j -= 1
-        else:
+        if auto in node.children and self.recurse(s, i, node.children[auto], auto):
             return True
 
+        if (s[i] in node.children or s[i] == '.') and self.recurse(s, i + 1, node.children[s[i]], auto):
+            return True
 
-class SolutionV2:
-    def countSubstrings(self, s):
-        """
-        :type s: str
-        :rtype: int
-        """
-        count = 0
-        for center in range(len(s) * 2 - 1):
-            left = center // 2
-            right = left + center % 2
-            while left >= 0 and right < len(s) and s[left] == s[right]:
-                count += 1
-                right += 1
-                left -= 1
-        return count
+        return False
 
 
-s = SolutionV2()
-assert s.countSubstrings('aaa') == 6
-assert s.countSubstrings('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') == 500500
+def test(s):
+    assert not s.isMatch('aa', 'a')
+    assert s.isMatch('', 'a*')
+    assert not s.isMatch('a', 'b')
+    assert s.isMatch('a*b*c*', 'abc')
+    assert s.isMatch('a', 'a*')
+    assert s.isMatch('a', 'a*')
+    assert s.isMatch('aaaa', 'a*')
+    assert s.isMatch('aaaa', 'aa*a')
+    assert s.isMatch('aaaab', 'a*b')
+    assert s.isMatch('b', 'a*b')
